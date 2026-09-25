@@ -10,8 +10,8 @@ port (
         clk    : in  std_logic;
         rst    : in  std_logic;
         en     : in  std_logic;
-		  mod_n  : in  unsigned(BITS - 1 downto 0);
-
-
+        mod_n  : in  unsigned(BITS - 1 downto 0);
+        q      : out std_logic_vector(6 downto 0);
+        tc     : out std_logic
     );
 end entity conta_mod_n;
