@@ -43,7 +43,7 @@ architecture confi of conta_mod_n is
     tc <= '1' when (cuenta >= mod_n - 1 and enable = '1') else '0';
 
     -- Decodificación al display 7 segmentos
-    q <= bin_to_7seg(to_integer(cuenta));
+  ----  q <= bin_to_7seg(to_integer(cuenta));
 
 end architecture confi;
 		

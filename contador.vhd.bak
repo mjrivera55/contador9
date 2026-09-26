@@ -9,7 +9,7 @@ entity contador is
         reset     : in  std_logic; 
         min   : out std_logic_vector(6 downto 0); -- Minutos
         sec_t : out std_logic_vector(6 downto 0); -- Decenas Segundos
-        
+        sec_u : out std_logic_vector(6 downto 0)  -- Unidades Segundos
     );
 end contador;
 
