@@ -1,5 +1,6 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use work.usar.all;
 
 entity contador is
 	Port (
@@ -9,7 +10,57 @@ entity contador is
         reset     : in  std_logic; 
         min   : out std_logic_vector(6 downto 0); -- Minutos
         sec_t : out std_logic_vector(6 downto 0); -- Decenas Segundos
-        
+        sec_u : out std_logic_vector(6 downto 0)  -- Unidades Segundos
     );
 end contador;
 
+architecture act of contador is
+
+-- Señales internas
+    signal wire_tic     : std_logic;
+    signal running      : std_logic := '0';
+    signal limite_total  : std_logic;
+
+    signal limt_sec_u   : std_logic;
+    signal limt_sec_t   : std_logic;
+    signal limt_min_u   : std_logic;
+
+    signal en_sec_u     : std_logic;
+    signal en_sec_t     : std_logic;
+    signal en_min_u     : std_logic;
+
+    signal bcd_sec_u    : std_logic_vector(3 downto 0);
+    signal bcd_sec_t    : std_logic_vector(3 downto 0);
+    signal bcd_min_u    : std_logic_vector(3 downto 0);
+
+begin
+
+    -- Instancia Divisor
+    U_DIV_1S: divisor_1s
+        port map (
+            clk   => clk,
+            reset => reset,
+            tic   => wire_tic
+        );
+
+  -- control marcha/parada 
+ process (clk,reset)
+	begin
+		if reset= '1' then
+			running <='0';
+		elsif rising_edge(clk) then
+		 if start='1' then
+		 running <='1';
+		 elsif stop ='1' or limite_total= '1' then
+		 running <='0';
+		 end if;
+		end if;
+	end process;
+
+limite_total <= '1' when (bcd_min_u = "0100" and bcd_sec_t = "0100" and bcd_sec_u = "0100") else '0';
+
+-- Enable Cascade
+    en_sec_u <= wire_tic and running and (not limite_total);
+    en_sec_t <= en_sec_u and limt_sec_u;
+    en_min_u <= en_sec_t and limt_sec_t;
+	
