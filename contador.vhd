@@ -47,8 +47,15 @@ begin
     start_h <= not start;
     stop_h  <= not stop;
 	 
-	 -- Como el reloj externo ya es de 1 Hz, el pulso de habilitación siempre es verdadero
-    wire_tic <= '1';
+-- DIVISOR DE RELOJ OBLIGATORIO PARA 50 MHz
+	U_DIV_1S: divisor_1s
+        port map (
+            clk   => clk,
+            reset => rst_h,
+            tic   => wire_tic
+        );
+	
+
 	 
   -- control marcha/parada 
  process (clk,rst_h)
@@ -63,7 +70,8 @@ begin
 		 end if;
 		end if;
 	end process;
-
+	
+-- Límite máximo: 9 min : 59 sec
 limite_total <= '1' when (bcd_min_u = "1001" and bcd_sec_t = "0101" and bcd_sec_u = "1001") else '0';
 
 -- Enable Cascade
