@@ -4,14 +4,49 @@ use IEEE.NUMERIC_STD.ALL;
  
 entity conta_mod_n is
  generic (
-        BITS : integer := BITS_MOD_N
+        BITS : integer := 4
     );
 port (
         clk    : in  std_logic;
         rst    : in  std_logic;
-        en     : in  std_logic;
+        enable     : in  std_logic;
 		  mod_n  : in  unsigned(BITS - 1 downto 0);
-
-
+        q      : out std_logic_vector(6 downto 0);
+        tc     : out std_logic
     );
 end entity conta_mod_n;
+
+architecture confi of conta_mod_n is
+	signal cuenta : unsigned(BITS - 1 downto 0) := (others => '0');
+	
+	begin 
+	 process(clk)
+    begin
+	  if rising_edge (clk) then
+	    if rst= '1' then
+			cuenta <= (others => '0');
+			else
+				if mod_n <= 1 then
+                    cuenta <= (others => '0');
+                elsif enable = '1' then
+                        if cuenta = (mod_n - 1) then
+                            cuenta <= (others => '0');
+                        else
+                            cuenta <= cuenta + 1;
+                        end if;
+							end if;
+						end if;
+					end if;
+			end process;
+			
+    -- Salida tc: '1' 
+    tc <= '1' when (cuenta >= mod_n - 1 and enable = '1') else '0';
+
+    -- Decodificación al display 7 segmentos
+    q <= bin_to_7seg(to_integer(cuenta));
+
+end architecture confi;
+		
+	
+           
+	   
