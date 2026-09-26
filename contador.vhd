@@ -18,6 +18,12 @@ end contador;
 architecture act of contador is
 
 -- Señales internas
+ -- Señales invertidas para trabajar internamente con '1' activo
+    signal rst_h      : std_logic;
+    signal start_h    : std_logic;
+    signal stop_h     : std_logic;
+
+
     signal wire_tic     : std_logic;
     signal running      : std_logic := '0';
     signal limite_total  : std_logic;
@@ -36,6 +42,11 @@ architecture act of contador is
 
 begin
 
+ -- Adaptación de Entradas Activas en Bajo ('0' presionado -> '1' interno)
+    rst_h   <= not reset;
+    start_h <= not start;
+    stop_h  <= not stop;
+
     -- Instancia Divisor
     U_DIV_1S: divisor_1s
         port map (
@@ -47,18 +58,18 @@ begin
   -- control marcha/parada 
  process (clk,reset)
 	begin
-		if reset= '1' then
+		if rst_h= '1' then
 			running <='0';
 		elsif rising_edge(clk) then
-		 if start='1' then
+		 if start_h='1' then
 		 running <='1';
-		 elsif stop ='1' or limite_total= '1' then
+		 elsif stop_h ='1' or limite_total= '1' then
 		 running <='0';
 		 end if;
 		end if;
 	end process;
 
-limite_total <= '1' when (bcd_min_u = "0101" and bcd_sec_t = "1001" and bcd_sec_u = "0100") else '0';
+limite_total <= '1' when (bcd_min_u = "1001" and bcd_sec_t = "0101" and bcd_sec_u = "1001") else '0';
 
 -- Enable Cascade
     en_sec_u <= wire_tic and running and (not limite_total);
@@ -70,7 +81,7 @@ limite_total <= '1' when (bcd_min_u = "0101" and bcd_sec_t = "1001" and bcd_sec_
         generic map ( BITS => 4 )
         port map (
             clk    => clk,
-            rst    => reset,
+            rst    => rst_h,
             enable => en_sec_u,
             mod_n  => to_unsigned(10, 4),
             q      => bcd_sec_u,
@@ -81,7 +92,7 @@ limite_total <= '1' when (bcd_min_u = "0101" and bcd_sec_t = "1001" and bcd_sec_
         generic map ( BITS => 4 )
         port map (
             clk    => clk,
-            rst    => reset,
+            rst    => rst_h,
             enable => en_sec_t,
             mod_n  => to_unsigned(6, 4),
             q      => bcd_sec_t,
@@ -92,7 +103,7 @@ limite_total <= '1' when (bcd_min_u = "0101" and bcd_sec_t = "1001" and bcd_sec_
         generic map ( BITS => 4 )
         port map (
             clk    => clk,
-            rst    => reset,
+            rst    => rst_h,
             enable => en_min_u,
             mod_n  => to_unsigned(10, 4),
             q      => bcd_min_u,
