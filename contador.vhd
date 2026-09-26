@@ -46,17 +46,12 @@ begin
     rst_h   <= not reset;
     start_h <= not start;
     stop_h  <= not stop;
-
-    -- Instancia Divisor
-    U_DIV_1S: divisor_1s
-        port map (
-            clk   => clk,
-            reset => reset,
-            tic   => wire_tic
-        );
-
+	 
+	 -- Como el reloj externo ya es de 1 Hz, el pulso de habilitación siempre es verdadero
+    wire_tic <= '1';
+	 
   -- control marcha/parada 
- process (clk,reset)
+ process (clk,rst_h)
 	begin
 		if rst_h= '1' then
 			running <='0';
