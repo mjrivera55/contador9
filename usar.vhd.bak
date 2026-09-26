@@ -1,6 +1,5 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
 
 package usar is
  
@@ -26,7 +25,7 @@ end component;
         rst    : in  std_logic;
         enable     : in  std_logic;
 		  mod_n  : in  unsigned(BITS - 1 downto 0);
-        q : out std_logic_vector(BITS - 1 downto 0);
+        q      : out std_logic_vector(6 downto 0);
         tc     : out std_logic
     );
 end component;

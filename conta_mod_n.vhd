@@ -11,7 +11,7 @@ port (
         rst    : in  std_logic;
         enable     : in  std_logic;
 		  mod_n  : in  unsigned(BITS - 1 downto 0);
-        q      : out std_logic_vector(6 downto 0);
+        q : out std_logic_vector(BITS - 1 downto 0);
         tc     : out std_logic
     );
 end entity conta_mod_n;
@@ -42,8 +42,8 @@ architecture confi of conta_mod_n is
     -- Salida tc: '1' 
     tc <= '1' when (cuenta >= mod_n - 1 and enable = '1') else '0';
 
-    -- Decodificación al display 7 segmentos
-  ----  q <= bin_to_7seg(to_integer(cuenta));
+
+q <= std_logic_vector(cuenta);
 
 end architecture confi;
 		

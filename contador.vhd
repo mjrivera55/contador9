@@ -1,6 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use work.usar.all;
+use IEEE.NUMERIC_STD.ALL;
 
 entity contador is
 	Port (
@@ -57,10 +58,50 @@ begin
 		end if;
 	end process;
 
-limite_total <= '1' when (bcd_min_u = "0100" and bcd_sec_t = "0100" and bcd_sec_u = "0100") else '0';
+limite_total <= '1' when (bcd_min_u = "0101" and bcd_sec_t = "1001" and bcd_sec_u = "0100") else '0';
 
 -- Enable Cascade
     en_sec_u <= wire_tic and running and (not limite_total);
     en_sec_t <= en_sec_u and limt_sec_u;
     en_min_u <= en_sec_t and limt_sec_t;
-	
+	 
+-- Instancias de Contadores
+    U_SEC_UNITS: conta_mod_n
+        generic map ( BITS => 4 )
+        port map (
+            clk    => clk,
+            rst    => reset,
+            enable => en_sec_u,
+            mod_n  => to_unsigned(10, 4),
+            q      => bcd_sec_u,
+            tc     => limt_sec_u
+        );
+
+	U_SEC_TENS: conta_mod_n
+        generic map ( BITS => 4 )
+        port map (
+            clk    => clk,
+            rst    => reset,
+            enable => en_sec_t,
+            mod_n  => to_unsigned(6, 4),
+            q      => bcd_sec_t,
+            tc     => limt_sec_t
+        );
+
+	U_MIN_UNITS: conta_mod_n
+        generic map ( BITS => 4 )
+        port map (
+            clk    => clk,
+            rst    => reset,
+            enable => en_min_u,
+            mod_n  => to_unsigned(10, 4),
+            q      => bcd_min_u,
+            tc     => limt_min_u
+        );
+		  
+-- Instancias conectadas a tu BCD_7SEG
+    DEC_SEC_U: BCD_7SEG port map ( A => bcd_sec_u, B => sec_u );
+    DEC_SEC_T: BCD_7SEG port map ( A => bcd_sec_t, B => sec_t );
+    DEC_MIN_U: BCD_7SEG port map ( A => bcd_min_u, B => min );
+	 
+end architecture;
