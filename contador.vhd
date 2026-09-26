@@ -11,13 +11,14 @@ entity contador is
         reset     : in  std_logic; 
         min   : out std_logic_vector(6 downto 0); -- Minutos
         sec_t : out std_logic_vector(6 downto 0); -- Decenas Segundos
-        sec_u : out std_logic_vector(6 downto 0)  -- Unidades Segundos
+        sec_u : out std_logic_vector(6 downto 0);  -- Unidades Segundos
+		  punto_dp : out std_logic
     );
 end contador;
 
 architecture act of contador is
 
--- Señales internas
+
  -- Señales invertidas para trabajar internamente con '1' activo
     signal rst_h      : std_logic;
     signal start_h    : std_logic;
@@ -74,7 +75,7 @@ begin
 -- Límite máximo: 9 min : 59 sec
 limite_total <= '1' when (bcd_min_u = "1001" and bcd_sec_t = "0101" and bcd_sec_u = "1001") else '0';
 
--- Enable Cascade
+-- Enable Cascada
     en_sec_u <= wire_tic and running and (not limite_total);
     en_sec_t <= en_sec_u and limt_sec_u;
     en_min_u <= en_sec_t and limt_sec_t;
@@ -117,5 +118,8 @@ limite_total <= '1' when (bcd_min_u = "1001" and bcd_sec_t = "0101" and bcd_sec_
     DEC_SEC_U: BCD_7SEG port map ( A => bcd_sec_u, B => sec_u );
     DEC_SEC_T: BCD_7SEG port map ( A => bcd_sec_t, B => sec_t );
     DEC_MIN_U: BCD_7SEG port map ( A => bcd_min_u, B => min );
+	 
+-- Encendido permanente del punto decimal (bit 7 en '0' activo en bajo)
+  punto_dp <= '0';
 	 
 end architecture;
