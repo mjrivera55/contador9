@@ -4,20 +4,20 @@ use IEEE.NUMERIC_STD.ALL;
  
 entity conta_mod_n is
  generic (
-        BITS : integer := 4
+        BITS : integer := 4 ---sirve para parametrizar un componente
     );
 port (
         clk    : in  std_logic;
-        rst    : in  std_logic;
-        enable     : in  std_logic;
-		  mod_n  : in  unsigned(BITS - 1 downto 0);
-        q : out std_logic_vector(BITS - 1 downto 0);
-        tc     : out std_logic
+        rst    : in  std_logic; --Reset
+        enable     : in  std_logic; ---Habilitador de conteo
+		  mod_n  : in  unsigned(BITS - 1 downto 0); -- Define el límite del módulo N
+        q : out std_logic_vector(BITS - 1 downto 0); --Valor actual del contador expresado en binario.
+        tc     : out std_logic --Fin de Conteo cuando N-1
     );
 end entity conta_mod_n;
 
 architecture confi of conta_mod_n is
-	signal cuenta : unsigned(BITS - 1 downto 0) := (others => '0');
+	signal cuenta : unsigned(BITS - 1 downto 0) := (others => '0'); ---almacena internamente la cuenta
 	
 	begin 
 	 process(clk)
@@ -26,8 +26,10 @@ architecture confi of conta_mod_n is
 	    if rst= '1' then
 			cuenta <= (others => '0');
 			else
+			----Protección de módulo inválido
 				if mod_n <= 1 then
                     cuenta <= (others => '0');
+					-----Habilitador
                 elsif enable = '1' then
                         if cuenta = (mod_n - 1) then
                             cuenta <= (others => '0');

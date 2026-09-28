@@ -73,7 +73,7 @@ begin
 	end process;
 	
 -- Límite máximo: 9 min : 59 sec
-limite_total <= '1' when (bcd_min_u = "1001" and bcd_sec_t = "0101" and bcd_sec_u = "1001") else '0';
+limite_total <= '1' when (bcd_min_u = "1001" and bcd_sec_t = "0011" and bcd_sec_u = "0101") else '0';
 
 -- Enable Cascada
     en_sec_u <= wire_tic and running and (not limite_total);
@@ -87,7 +87,7 @@ limite_total <= '1' when (bcd_min_u = "1001" and bcd_sec_t = "0101" and bcd_sec_
             clk    => clk,
             rst    => rst_h,
             enable => en_sec_u,
-            mod_n  => to_unsigned(10, 4),
+            mod_n  => to_unsigned(6, 4),
             q      => bcd_sec_u,
             tc     => limt_sec_u
         );
@@ -98,7 +98,7 @@ limite_total <= '1' when (bcd_min_u = "1001" and bcd_sec_t = "0101" and bcd_sec_
             clk    => clk,
             rst    => rst_h,
             enable => en_sec_t,
-            mod_n  => to_unsigned(6, 4),
+            mod_n  => to_unsigned(4, 4),
             q      => bcd_sec_t,
             tc     => limt_sec_t
         );
@@ -114,7 +114,7 @@ limite_total <= '1' when (bcd_min_u = "1001" and bcd_sec_t = "0101" and bcd_sec_
             tc     => limt_min_u
         );
 		  
--- Instancias conectadas a tu BCD_7SEG
+-- Instancias conectadas al BCD_7SEG
     DEC_SEC_U: BCD_7SEG port map ( A => bcd_sec_u, B => sec_u );
     DEC_SEC_T: BCD_7SEG port map ( A => bcd_sec_t, B => sec_t );
     DEC_MIN_U: BCD_7SEG port map ( A => bcd_min_u, B => min );
